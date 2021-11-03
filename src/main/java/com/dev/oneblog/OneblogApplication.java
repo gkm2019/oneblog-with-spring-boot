@@ -8,6 +8,5 @@ public class OneblogApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(OneblogApplication.class, args);
-		System.out.println("hello world!");
 	}
 }
