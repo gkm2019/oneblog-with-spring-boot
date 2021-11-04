@@ -1,4 +1,4 @@
-package com.dev.oneblog.user.controller;
+package com.dev.oneblog.config;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +17,8 @@ import java.security.Principal;
 @AllArgsConstructor
 @Controller
 //@RestController
-@RequestMapping(value="/user")
-public class UserController {
+//@RequestMapping(value="/user")
+public class IndexController {
 
     @GetMapping("/index")
     public String index(Model model, Principal principal) {
