@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,6 +37,8 @@ class AccountControllerTest {
     MockMvc mockMvc;
 
     @Test
+    @WithAnonymousUser
+    @DisplayName("index page에 anonymous 접근")
     public void index_anonymous() throws Exception {
         mockMvc.perform(get("/"))
                 .andDo(print())
@@ -42,7 +46,8 @@ class AccountControllerTest {
     }
 
     @Test
-    @DisplayName("index page에 접근")
+    @WithMockUser(username="kyeongmin", roles="USER")
+    @DisplayName("index page에 USER 접근")
     public void index_user() throws Exception {
         mockMvc.perform(get("/"))
                 .andDo(print())
@@ -50,7 +55,8 @@ class AccountControllerTest {
     }
 
     @Test
-    @DisplayName("admin page에 USER가 접근")
+    @WithUser
+    @DisplayName("admin page USER 접근")
     public void admin_user() throws Exception {
         mockMvc.perform(get("/admin").with(user("kyeongmin").roles("USER")))
                 .andDo(print())
@@ -58,7 +64,7 @@ class AccountControllerTest {
     }
 
     @Test
-    @DisplayName("admin page에 ADMIN이 접근")
+    @DisplayName("admin page ADMIN 접근")
     public void admin_admin() throws Exception {
         mockMvc.perform(get("/admin").with(user("kyeongmin").roles("ADMIN")))
                 .andDo(print())
