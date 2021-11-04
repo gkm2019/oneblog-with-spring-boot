@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,19 +20,27 @@ public class AccountService implements UserDetailsService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
-    public UserDetails loadUserByUsername(String userNm) throws UsernameNotFoundException {
-        AccountEntity accountEntity = accountRepository.findByUserNm(userNm);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        AccountEntity accountEntity = accountRepository.findByUsername(username);
 
         if(accountEntity == null) {
-            throw new UsernameNotFoundException(userNm);
+            throw new UsernameNotFoundException(username);
         }
 
         return User.builder() //spring Security가 제공함
-                .username(accountEntity.getUserNm())
+                .username(accountEntity.getUsername())
                 .password(accountEntity.getPassword())
                 .roles(accountEntity.getRole())
                 .build();
+    }
+
+    public AccountEntity createNew(AccountEntity accountEntity) {
+        accountEntity.encodePassword(passwordEncoder);
+        return this.accountRepository.save(accountEntity);
     }
 
 }

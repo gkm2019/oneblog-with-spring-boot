@@ -2,6 +2,7 @@ package com.dev.oneblog.Account.controller;
 
 import com.dev.oneblog.Account.entity.AccountEntity;
 import com.dev.oneblog.Account.repository.AccountRepository;
+import com.dev.oneblog.Account.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,10 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AccountController {
     @Autowired
-    AccountRepository accountRepository;
+    AccountService accountService;
 
-    @GetMapping("/account/{role}/{usename}/{password}")
+    @GetMapping("/account/{role}/{username}/{password}")
     public AccountEntity createAccount(@ModelAttribute AccountEntity accountEntity) {
-        return accountRepository.save(accountEntity);
+        return accountService.createNew(accountEntity);
     }
 }
