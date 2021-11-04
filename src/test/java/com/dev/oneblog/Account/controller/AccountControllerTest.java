@@ -1,6 +1,7 @@
 package com.dev.oneblog.Account.controller;
 
 import com.dev.oneblog.Account.entity.AccountEntity;
+import com.dev.oneblog.Account.service.AccountService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +15,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,6 +39,9 @@ Junit 4
 class AccountControllerTest {
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    AccountService accountService;
 
     @Test
     @WithAnonymousUser
@@ -70,4 +77,31 @@ class AccountControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("formLogin 테스트 (성공) : authenticaated() 해당 유저가 있어야 인증이 된다.")
+    public void login_success() throws Exception {
+        AccountEntity user = this.createUser("kyeongmin", "123");
+        mockMvc.perform(formLogin().user(user.getUsername()).password("123")) //getPassword()는 암호화됨
+                .andExpect(authenticated());
+    }
+
+    @Test
+    @DisplayName("formLogin 테스트 (실패) : authenticaated() 해당 유저가 있어야 인증이 된다.")
+    public void login_fail() throws Exception {
+        AccountEntity user = this.createUser("kyeongmin", "123"); //pw 123으로 해줘야함.
+        mockMvc.perform(formLogin().user(user.getUsername()).password("1234"))
+                .andExpect(unauthenticated());
+    }
+
+    private AccountEntity createUser(String username, String password) {
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setUsername(username);
+        accountEntity.setPassword(password);
+        accountEntity.setRole("USER");
+        accountService.createNew(accountEntity);
+
+        return accountEntity;
+    }
+
 }
